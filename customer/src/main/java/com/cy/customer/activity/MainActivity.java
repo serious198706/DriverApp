@@ -1,26 +1,36 @@
-package com.cy.customer;
-
-import android.app.Activity;
+package com.cy.customer.activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+
+import com.cy.customer.R;
+import com.cy.customer.fragment.BookFragment;
+import com.cy.customer.fragment.MainFragment;
+import com.cy.customer.fragment.MapFragment;
+import com.cy.customer.fragment.MoreFragment;
+import com.cy.customer.fragment.NavigationDrawerFragment;
+import com.cy.customer.fragment.OrdersFragment;
+import com.cy.customer.fragment.ScoreFragment;
 
 
 public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        MapFragment.OnFragmentInteractionListener,
+        MainFragment.OnFragmentInteractionListener,
+        OrdersFragment.OnFragmentInteractionListener,
+        BookFragment.OnFragmentInteractionListener,
+        ScoreFragment.OnFragmentInteractionListener,
+        MoreFragment.OnFragmentInteractionListener{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -32,10 +42,24 @@ public class MainActivity extends Activity
      */
     private CharSequence mTitle;
 
+    private MainFragment mainFragment;
+    private MapFragment mapFragment;
+    private OrdersFragment ordersFragment;
+    private BookFragment bookFragment;
+    private ScoreFragment scoreFragment;
+    private MoreFragment moreFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mapFragment = MapFragment.newInstance("", "");
+        mainFragment = MainFragment.newInstance("", "");
+        ordersFragment = OrdersFragment.newInstance("", "");
+        bookFragment = BookFragment.newInstance("", "");
+        scoreFragment = ScoreFragment.newInstance("", "");
+        moreFragment = MoreFragment.newInstance("", "");
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -51,8 +75,34 @@ public class MainActivity extends Activity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment = mainFragment;
+
+        if(fragment == null)
+            fragment = mainFragment = MainFragment.newInstance("", "");
+
+        switch (position) {
+            case 0:
+                fragment = mainFragment;
+                break;
+            case 1:
+                fragment = mapFragment;
+                break;
+            case 2:
+                fragment = ordersFragment;
+                break;
+            case 3:
+                fragment = bookFragment;
+                break;
+            case 4:
+                fragment = scoreFragment;
+                break;
+            case 5:
+                fragment = moreFragment;
+                break;
+        }
+
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
     }
 
@@ -110,6 +160,11 @@ public class MainActivity extends Activity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     /**

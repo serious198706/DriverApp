@@ -1,4 +1,4 @@
-package com.cy.customer;
+package com.cy.customer.entity;
 
 /**
  * Created by 岩 on 2014/8/11.
