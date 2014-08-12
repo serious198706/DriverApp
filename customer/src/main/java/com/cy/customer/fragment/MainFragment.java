@@ -7,8 +7,17 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.cy.customer.R;
+import com.cy.customer.adapter.MainAdapter;
+import com.cy.customer.entity.MainItem;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +33,11 @@ public class MainFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private View rootView;
+    private ListView listView;
+    private MainAdapter adapter;
+    private List<MainItem> items;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -65,7 +79,26 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        items = new ArrayList<MainItem>();
+
+        try {
+            JSONObject jsonObject = new JSONObject(mParam1);
+            items.add(new MainItem("已消费金额", jsonObject.getString("moneySpent"), OrdersFragment.class));
+            items.add(new MainItem("剩余金额", jsonObject.getString("moneyLeft"), OrdersFragment.class));
+            items.add(new MainItem("完成订单数", jsonObject.getString("orderCount"), OrdersFragment.class));
+            items.add(new MainItem("积分", jsonObject.getString("score"), ScoreFragment.class));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        adapter = new MainAdapter(getActivity(), items);
+
+        listView = (ListView)rootView.findViewById(R.id.mainList);
+        listView.setAdapter(adapter);
+
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

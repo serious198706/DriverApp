@@ -78,9 +78,11 @@ public class NavigationAdapter extends BaseAdapter {
             // 设置选中效果
             if(selectedPosition == i)
             {
+                viewHolder.icon.setBackgroundResource(R.drawable.drivers_selected);
                 viewHolder.text.setTextColor(Color.BLACK);
                 viewHolder.root.setBackgroundResource(R.drawable.navi_selected);
             } else {
+                viewHolder.icon.setBackgroundResource(R.drawable.drivers);
                 viewHolder.text.setTextColor(Color.WHITE);
                 viewHolder.root.setBackgroundColor(Color.TRANSPARENT);
             }

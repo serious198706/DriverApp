@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.baidu.mapapi.map.BaiduMapOptions;
+import com.baidu.mapapi.map.MapView;
 import com.cy.customer.R;
 
 
@@ -31,6 +33,9 @@ public class MapFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private View rootView;
+    private MapView mapView;
 
     /**
      * Use this factory method to create a new instance of
@@ -65,8 +70,30 @@ public class MapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false);
+        mapView = new MapView(getActivity(), new BaiduMapOptions());
+
+        return mapView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // activity 暂停时同时暂停地图控件
+        mapView.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // activity 恢复时同时恢复地图控件
+        mapView.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // activity 销毁时同时销毁地图控件
+        mapView.onDestroy();
     }
 
     // TODO: Rename method, update argument and hook method into UI event

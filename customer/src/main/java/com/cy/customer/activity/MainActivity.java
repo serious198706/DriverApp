@@ -4,15 +4,24 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.cy.customer.R;
 import com.cy.customer.fragment.BookFragment;
 import com.cy.customer.fragment.MainFragment;
@@ -21,6 +30,10 @@ import com.cy.customer.fragment.MoreFragment;
 import com.cy.customer.fragment.NavigationDrawerFragment;
 import com.cy.customer.fragment.OrdersFragment;
 import com.cy.customer.fragment.ScoreFragment;
+import com.cy.customer.utils.Constants;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class MainActivity extends Activity
@@ -49,13 +62,41 @@ public class MainActivity extends Activity
     private ScoreFragment scoreFragment;
     private MoreFragment moreFragment;
 
+    private SDKReceiver mReceiver;
+
+    /**
+     * 构造广播监听类，监听 SDK key 验证以及网络异常广播
+     */
+    public class SDKReceiver extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            String s = intent.getAction();
+            Log.d(Constants.TAG, "action: " + s);
+
+            if (s.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
+                Log.d(Constants.TAG, "key 验证出错! 请在 AndroidManifest.xml 文件中检查 key 设置");
+            } else if (s
+                    .equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
+                Toast.makeText(MainActivity.this, "网络出错", Toast.LENGTH_LONG).show();
+                Log.d(Constants.TAG, "Map SDK network error!!");
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        String str = "";
+
+        try {
+            str = getDummyJsonString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        mainFragment = MainFragment.newInstance(str, "");
         mapFragment = MapFragment.newInstance("", "");
-        mainFragment = MainFragment.newInstance("", "");
         ordersFragment = OrdersFragment.newInstance("", "");
         bookFragment = BookFragment.newInstance("", "");
         scoreFragment = ScoreFragment.newInstance("", "");
@@ -69,6 +110,13 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        // 注册 SDK 广播监听者
+        IntentFilter iFilter = new IntentFilter();
+        iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
+        iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
+        mReceiver = new SDKReceiver();
+        registerReceiver(mReceiver, iFilter);
     }
 
     @Override
@@ -165,6 +213,17 @@ public class MainActivity extends Activity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    public String getDummyJsonString() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("moneySpent", "251.00");
+        jsonObject.put("moneyLeft", "1249.00");
+        jsonObject.put("orderCount", "4");
+        jsonObject.put("score", "16");
+
+        return jsonObject.toString();
     }
 
     /**

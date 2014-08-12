@@ -5,9 +5,9 @@
     tools:context="com.cy.customer.fragment.MapFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="地图" />
+        android:layout_height="match_parent"/>
 
 </FrameLayout>
