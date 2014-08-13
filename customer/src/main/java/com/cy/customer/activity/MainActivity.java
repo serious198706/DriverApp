@@ -104,7 +104,7 @@ public class MainActivity extends Activity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        mTitle = getString(R.string.main);
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -125,56 +125,50 @@ public class MainActivity extends Activity
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = mainFragment;
 
-        if(fragment == null)
-            fragment = mainFragment = MainFragment.newInstance("", "");
+        if(fragment == null) {
+            String str = "";
+
+            try {
+                str = getDummyJsonString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            fragment = mainFragment = MainFragment.newInstance(str, "");
+            mTitle = getString(R.string.main);
+            restoreActionBar();
+        }
 
         switch (position) {
             case 0:
                 fragment = mainFragment;
+                mTitle = getString(R.string.main);
                 break;
             case 1:
                 fragment = mapFragment;
+                mTitle = getString(R.string.drivers);
                 break;
             case 2:
                 fragment = ordersFragment;
+                mTitle = getString(R.string.orders);
                 break;
             case 3:
                 fragment = bookFragment;
+                mTitle = getString(R.string.book);
                 break;
             case 4:
                 fragment = scoreFragment;
+                mTitle = getString(R.string.score);
                 break;
             case 5:
                 fragment = moreFragment;
+                mTitle = getString(R.string.more);
                 break;
         }
 
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
-    }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.main);
-                break;
-            case 2:
-                mTitle = getString(R.string.drivers);
-                break;
-            case 3:
-                mTitle = getString(R.string.orders);
-                break;
-            case 4:
-                mTitle = getString(R.string.book);
-                break;
-            case 5:
-                mTitle = getString(R.string.score);
-                break;
-            case 6:
-                mTitle = getString(R.string.more);
-                break;
-        }
     }
 
     public void restoreActionBar() {
@@ -191,10 +185,21 @@ public class MainActivity extends Activity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
+            int menuId = R.menu.main;
+
+            if(mTitle.equals(getString(R.string.main)))
+                menuId = R.menu.main;
+
+            if(mTitle.equals(getString(R.string.drivers)))
+                menuId = R.menu.map;
+
+
+            getMenuInflater().inflate(menuId, menu);
             restoreActionBar();
+
             return true;
         }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -204,9 +209,15 @@ public class MainActivity extends Activity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+
+        switch (id) {
+            case R.id.viewByList:
+                mapFragment.switchToListView();
+                return true;
+            case R.id.action_settings:
+                return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -225,45 +236,4 @@ public class MainActivity extends Activity
 
         return jsonObject.toString();
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
-
 }

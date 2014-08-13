@@ -1,16 +1,34 @@
 package com.cy.customer.fragment;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BaiduMapOptions;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.GroundOverlayOptions;
+import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapPoi;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.cy.customer.R;
+import com.cy.customer.entity.DriverInfo;
+import com.cy.customer.view.DriverInfoView;
 
 
 /**
@@ -36,6 +54,20 @@ public class MapFragment extends Fragment {
 
     private View rootView;
     private MapView mapView;
+    private BaiduMap mBaiduMap;
+    private Marker mMarkerA;
+    private Marker mMarkerB;
+    private Marker mMarkerC;
+    private Marker mMarkerD;
+    private InfoWindow mInfoWindow;
+
+    private DriverInfo driverA;
+    private DriverInfo driverB;
+    private DriverInfo driverC;
+    private DriverInfo driverD;
+
+    BitmapDescriptor bd = BitmapDescriptorFactory
+            .fromResource(R.drawable.icon_gcoding);
 
     /**
      * Use this factory method to create a new instance of
@@ -65,6 +97,11 @@ public class MapFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        driverA = new DriverInfo(null, "张师傅", "13888888888", 2.0f);
+        driverB = new DriverInfo(null, "李师傅", "13999999999", 4.0f);
+        driverD = new DriverInfo(null, "王师傅", "13000000000", 3.5f);
+        driverD = new DriverInfo(null, "赵师傅", "13777777777", 5.0f);
     }
 
     @Override
@@ -72,7 +109,84 @@ public class MapFragment extends Fragment {
                              Bundle savedInstanceState) {
         mapView = new MapView(getActivity(), new BaiduMapOptions());
 
+        mBaiduMap = mapView.getMap();
+        MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(14.0f);
+        mBaiduMap.setMapStatus(msu);
+        initOverlay();
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            public boolean onMarkerClick(final Marker marker) {
+                DriverInfoView driverInfoView = new DriverInfoView(getActivity(), driverA);
+
+                final LatLng ll = marker.getPosition();
+                Point p = mBaiduMap.getProjection().toScreenLocation(ll);
+                p.y -= 47;
+                LatLng llInfo = mBaiduMap.getProjection().fromScreenLocation(p);
+                InfoWindow.OnInfoWindowClickListener listener = null;
+
+                mInfoWindow = new InfoWindow(driverInfoView, llInfo, listener);
+                mBaiduMap.showInfoWindow(mInfoWindow);
+                mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        mBaiduMap.hideInfoWindow();
+                    }
+
+                    @Override
+                    public boolean onMapPoiClick(MapPoi mapPoi) {
+                        return false;
+                    }
+                });
+                return true;
+            }
+        });
+
         return mapView;
+    }
+
+    public void initOverlay() {
+        // add marker overlay
+        LatLng llA = new LatLng(39.963175, 116.400244);
+        LatLng llB = new LatLng(39.942821, 116.369199);
+        LatLng llC = new LatLng(39.939723, 116.425541);
+        LatLng llD = new LatLng(39.906965, 116.401394);
+
+        OverlayOptions ooA = new MarkerOptions().position(llA).icon(bd)
+                .zIndex(9).draggable(true);
+        mMarkerA = (Marker) (mBaiduMap.addOverlay(ooA));
+        OverlayOptions ooB = new MarkerOptions().position(llB).icon(bd)
+                .zIndex(5);
+        mMarkerB = (Marker) (mBaiduMap.addOverlay(ooB));
+        OverlayOptions ooC = new MarkerOptions().position(llC).icon(bd)
+                .perspective(false).anchor(0.5f, 0.5f).rotate(30).zIndex(7);
+        mMarkerC = (Marker) (mBaiduMap.addOverlay(ooC));
+        OverlayOptions ooD = new MarkerOptions().position(llD).icon(bd)
+                .perspective(false).zIndex(7);
+        mMarkerD = (Marker) (mBaiduMap.addOverlay(ooD));
+
+        // add ground overlay
+        LatLng southwest = new LatLng(39.92235, 116.380338);
+        LatLng northeast = new LatLng(39.947246, 116.414977);
+        LatLngBounds bounds = new LatLngBounds.Builder().include(northeast)
+                .include(southwest).build();
+
+        MapStatusUpdate u = MapStatusUpdateFactory
+                .newLatLng(bounds.getCenter());
+        mBaiduMap.setMapStatus(u);
+
+        mBaiduMap.setOnMarkerDragListener(new BaiduMap.OnMarkerDragListener() {
+            public void onMarkerDrag(Marker marker) {
+            }
+
+            public void onMarkerDragEnd(Marker marker) {
+                Toast.makeText(getActivity(),
+                        "拖拽结束，新位置：" + marker.getPosition().latitude + ", "
+                                + marker.getPosition().longitude,
+                        Toast.LENGTH_LONG).show();
+            }
+
+            public void onMarkerDragStart(Marker marker) {
+            }
+        });
     }
 
     @Override
@@ -118,6 +232,12 @@ public class MapFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void switchToListView() {
+
+
+        Toast.makeText(getActivity(), "Switching...", Toast.LENGTH_SHORT).show();
     }
 
     /**
