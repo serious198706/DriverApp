@@ -30,6 +30,8 @@ public class DriverInfoView extends LinearLayout{
         init();
     }
 
+    public DriverInfo getDriver() { return this.driverInfo; }
+
     private void init() {
         LayoutInflater.from(context).inflate(R.layout.driver_info_layout, this);
 

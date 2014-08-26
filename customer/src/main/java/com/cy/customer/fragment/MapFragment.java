@@ -67,7 +67,7 @@ public class MapFragment extends Fragment {
     private DriverInfo driverD;
 
     BitmapDescriptor bd = BitmapDescriptorFactory
-            .fromResource(R.drawable.icon_gcoding);
+            .fromResource(R.drawable.location);
 
     /**
      * Use this factory method to create a new instance of
@@ -100,12 +100,12 @@ public class MapFragment extends Fragment {
 
         driverA = new DriverInfo(null, "张师傅", "13888888888", 2.0f);
         driverB = new DriverInfo(null, "李师傅", "13999999999", 4.0f);
-        driverD = new DriverInfo(null, "王师傅", "13000000000", 3.5f);
+        driverC = new DriverInfo(null, "王师傅", "13000000000", 3.5f);
         driverD = new DriverInfo(null, "赵师傅", "13777777777", 5.0f);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         mapView = new MapView(getActivity(), new BaiduMapOptions());
 
@@ -115,13 +115,30 @@ public class MapFragment extends Fragment {
         initOverlay();
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             public boolean onMarkerClick(final Marker marker) {
-                DriverInfoView driverInfoView = new DriverInfoView(getActivity(), driverA);
+                final DriverInfoView driverInfoView;
+
+                if(marker == mMarkerA) {
+                    driverInfoView = new DriverInfoView(getActivity(), driverA);
+                } else if(marker == mMarkerB) {
+                    driverInfoView = new DriverInfoView(getActivity(), driverB);
+                } else if(marker == mMarkerC) {
+                    driverInfoView = new DriverInfoView(getActivity(), driverC);
+                } else if(marker == mMarkerD) {
+                    driverInfoView = new DriverInfoView(getActivity(), driverD);
+                } else {
+                    driverInfoView = new DriverInfoView(getActivity(), driverA);
+                }
 
                 final LatLng ll = marker.getPosition();
                 Point p = mBaiduMap.getProjection().toScreenLocation(ll);
                 p.y -= 47;
                 LatLng llInfo = mBaiduMap.getProjection().fromScreenLocation(p);
-                InfoWindow.OnInfoWindowClickListener listener = null;
+                InfoWindow.OnInfoWindowClickListener listener = new InfoWindow.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick() {
+                        Toast.makeText(getActivity(), driverInfoView.getDriver().name, Toast.LENGTH_SHORT).show();
+                    }
+                };
 
                 mInfoWindow = new InfoWindow(driverInfoView, llInfo, listener);
                 mBaiduMap.showInfoWindow(mInfoWindow);
