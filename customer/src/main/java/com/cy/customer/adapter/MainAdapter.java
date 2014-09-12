@@ -1,18 +1,14 @@
 package com.cy.customer.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cy.customer.R;
 import com.cy.customer.entity.MainItem;
-import com.cy.customer.entity.NavigationItem;
 
 import java.util.List;
 

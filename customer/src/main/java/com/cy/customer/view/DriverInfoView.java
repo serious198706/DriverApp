@@ -3,7 +3,6 @@ package com.cy.customer.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Rating;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,7 +32,7 @@ public class DriverInfoView extends LinearLayout{
     public DriverInfo getDriver() { return this.driverInfo; }
 
     private void init() {
-        LayoutInflater.from(context).inflate(R.layout.driver_info_layout, this);
+        LayoutInflater.from(context).inflate(R.layout.driver_popup_layout, this);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
 

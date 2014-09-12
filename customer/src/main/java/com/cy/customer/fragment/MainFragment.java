@@ -3,12 +3,13 @@ package com.cy.customer.fragment;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
+
 import com.cy.customer.R;
 import com.cy.customer.adapter.MainAdapter;
 import com.cy.customer.entity.MainItem;
@@ -22,7 +23,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainFragment.OnFragmentInteractionListener} interface
+ * {@link com.cy.customer.fragment.MainFragment.OnSwitchFragment} interface
  * to handle interaction events.
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -43,7 +44,7 @@ public class MainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnSwitchFragment mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -94,21 +95,29 @@ public class MainFragment extends Fragment {
         listView = (ListView)rootView.findViewById(R.id.mainList);
         listView.setAdapter(adapter);
 
-        return rootView;
-    }
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i <= 2) {
+                    if (mListener != null) {
+                        mListener.onSwitchFragment(2);
+                    }
+                } else if(i == 3) {
+                    if (mListener != null) {
+                        mListener.onSwitchFragment(4);
+                    }
+                }
+            }
+        });
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        return rootView;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnSwitchFragment) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -131,9 +140,9 @@ public class MainFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnSwitchFragment {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onSwitchFragment(int index);
     }
 
 }

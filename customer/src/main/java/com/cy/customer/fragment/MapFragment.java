@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
@@ -28,6 +29,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
 import com.cy.customer.R;
 import com.cy.customer.entity.DriverInfo;
+import com.cy.customer.view.DriverDetailDialog;
 import com.cy.customer.view.DriverInfoView;
 
 
@@ -65,6 +67,8 @@ public class MapFragment extends Fragment {
     private DriverInfo driverB;
     private DriverInfo driverC;
     private DriverInfo driverD;
+
+    private ListView listView;
 
     BitmapDescriptor bd = BitmapDescriptorFactory
             .fromResource(R.drawable.location);
@@ -107,7 +111,11 @@ public class MapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-        mapView = new MapView(getActivity(), new BaiduMapOptions());
+        rootView = inflater.inflate(R.layout.fragment_map, container, false);
+        mapView = (MapView)rootView.findViewById(R.id.mapView);
+        listView = (ListView)rootView.findViewById(R.id.driverList);
+
+        // TODO 添加DriverListAdapter(已有代码)
 
         mBaiduMap = mapView.getMap();
         MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(14.0f);
@@ -136,7 +144,9 @@ public class MapFragment extends Fragment {
                 InfoWindow.OnInfoWindowClickListener listener = new InfoWindow.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick() {
-                        Toast.makeText(getActivity(), driverInfoView.getDriver().name, Toast.LENGTH_SHORT).show();
+                        // 显示司机的详细信息
+                        DriverDetailDialog driverDetailDialog = new DriverDetailDialog(getActivity(), driverInfoView.getDriver());
+                        driverDetailDialog.show();
                     }
                 };
 
@@ -157,7 +167,7 @@ public class MapFragment extends Fragment {
             }
         });
 
-        return mapView;
+        return rootView;
     }
 
     public void initOverlay() {
@@ -227,34 +237,10 @@ public class MapFragment extends Fragment {
         mapView.onDestroy();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
     public void switchToListView() {
-
-
-        Toast.makeText(getActivity(), "Switching...", Toast.LENGTH_SHORT).show();
+        boolean show = mapView.getVisibility() == View.GONE;
+        mapView.setVisibility(show ? View.VISIBLE : View.GONE);
+        listView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     /**

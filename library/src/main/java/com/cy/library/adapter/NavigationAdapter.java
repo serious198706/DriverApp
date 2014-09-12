@@ -1,4 +1,4 @@
-package com.cy.customer.adapter;
+package com.cy.library.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cy.customer.entity.NavigationItem;
-import com.cy.customer.R;
+import com.cy.library.R;
+import com.cy.library.entity.NavigationItem;
 
 import java.util.List;
 

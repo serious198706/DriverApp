@@ -3,7 +3,7 @@ package com.cy.customer.fragment;
 
 import android.app.Activity;
 import android.app.ActionBar;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,8 +22,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cy.customer.R;
-import com.cy.customer.adapter.NavigationAdapter;
-import com.cy.customer.entity.NavigationItem;
+import com.cy.library.adapter.NavigationAdapter;
+import com.cy.library.entity.NavigationItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -197,7 +197,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    public void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);

@@ -1,6 +1,7 @@
-package com.cy.customer;
+package com.cy.library;
 
 import android.app.Application;
+
 import com.baidu.mapapi.SDKInitializer;
 
 /**

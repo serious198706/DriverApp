@@ -2,23 +2,19 @@ package com.cy.customer.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
@@ -36,10 +32,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         MapFragment.OnFragmentInteractionListener,
-        MainFragment.OnFragmentInteractionListener,
+        MainFragment.OnSwitchFragment,
         OrdersFragment.OnFragmentInteractionListener,
         BookFragment.OnFragmentInteractionListener,
         ScoreFragment.OnFragmentInteractionListener,
@@ -103,7 +99,7 @@ public class MainActivity extends Activity
         moreFragment = MoreFragment.newInstance("", "");
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getString(R.string.main);
 
         // Set up the drawer.
@@ -122,7 +118,7 @@ public class MainActivity extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = mainFragment;
 
         if(fragment == null) {
@@ -169,13 +165,16 @@ public class MainActivity extends Activity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+        restoreActionBar();
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        if (actionBar != null) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setTitle(mTitle);
+        }
     }
 
 
@@ -224,6 +223,11 @@ public class MainActivity extends Activity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onSwitchFragment(int index) {
+        mNavigationDrawerFragment.selectItem(index);
     }
 
     public String getDummyJsonString() throws JSONException {

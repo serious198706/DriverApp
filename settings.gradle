@@ -1,1 +1,1 @@
-include ':customer', ':driver'
+include ':customer', ':driver', ':library'

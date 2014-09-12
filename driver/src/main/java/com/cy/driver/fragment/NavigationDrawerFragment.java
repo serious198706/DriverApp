@@ -1,9 +1,9 @@
-package com.cy.driver;
+package com.cy.driver.fragment;
 
 
 import android.app.Activity;
 import android.app.ActionBar;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,9 +18,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.cy.driver.R;
+import com.cy.library.adapter.NavigationAdapter;
+import com.cy.library.entity.NavigationItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -57,6 +63,7 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+    private NavigationAdapter adapter;
 
     public NavigationDrawerFragment() {
     }
@@ -97,15 +104,18 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                }));
+
+        List<NavigationItem> items = new ArrayList<NavigationItem>();
+        items.add(new NavigationItem(R.drawable.drivers, R.string.main));
+        items.add(new NavigationItem(R.drawable.drivers, R.string.wait_order));
+        items.add(new NavigationItem(R.drawable.drivers, R.string.orders));
+        items.add(new NavigationItem(R.drawable.drivers, R.string.account_info));
+        items.add(new NavigationItem(R.drawable.drivers, R.string.statistics));
+        items.add(new NavigationItem(R.drawable.drivers, R.string.more));
+
+        adapter = new NavigationAdapter(getActivity(), items);
+
+        mDrawerListView.setAdapter(adapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -188,10 +198,11 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    public void selectItem(int position) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
+            adapter.setSelectedPosition(position);
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
