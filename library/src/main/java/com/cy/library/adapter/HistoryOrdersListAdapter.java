@@ -34,7 +34,7 @@ public class HistoryOrdersListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return items.size();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class HistoryOrdersListAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int i) {
-        return 0;
+        return i;
     }
 
     @Override
